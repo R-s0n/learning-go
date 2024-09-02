@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -33,10 +34,12 @@ func main() {
 		urlNumber := len(validUrlArray)
 		output := fmt.Sprintf("[+] %d Valid URLs Found!", urlNumber)
 		fmt.Println(output)
+		wg := sync.WaitGroup{}
+		wg.Add(len(validUrlArray))
 		for _, u := range validUrlArray {
-			fmt.Println("[-] Scanning " + u)
-			scan.Test(u)
+			go scan.Test(u, &wg)
 		}
+		wg.Wait()
 	} else {
 		fmt.Println("[!] Please provide only a filename!\n[!] Example: ./tus file.ext")
 	}
