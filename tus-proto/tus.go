@@ -2,10 +2,21 @@ package main
 
 import (
 	"fmt"
+	"learning-go/tus-proto/scan"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 )
+
+type TargetUrl struct {
+	code     int
+	protocol string
+	cookies  []string
+	headers  http.Header
+	body     string
+}
 
 func main() {
 	fmt.Println("[+] Starting TUS...")
@@ -32,9 +43,12 @@ func main() {
 		urlNumber := len(validUrlArray)
 		output := fmt.Sprintf("[+] %d Valid URLs Found!", urlNumber)
 		fmt.Println(output)
+		wg := sync.WaitGroup{}
+		wg.Add(len(validUrlArray))
 		for _, u := range validUrlArray {
-			fmt.Println("[-] Scanning " + u)
+			go scan.Test(u, &wg)
 		}
+		wg.Wait()
 	} else {
 		fmt.Println("[!] Please provide only a filename!\n[!] Example: ./tus file.ext")
 	}

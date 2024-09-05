@@ -1,6 +1,6 @@
 test
 https://floqast.com
 testetst
-https://floqast.app
+https://automation.floqast.app
 test
 https://floqast.engineering
