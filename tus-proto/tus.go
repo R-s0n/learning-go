@@ -3,20 +3,11 @@ package main
 import (
 	"fmt"
 	"learning-go/tus-proto/scan"
-	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"sync"
 )
-
-type TargetUrl struct {
-	code     int
-	protocol string
-	cookies  []string
-	headers  http.Header
-	body     string
-}
 
 func main() {
 	fmt.Println("[+] Starting TUS...")
