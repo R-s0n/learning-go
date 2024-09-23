@@ -1,5 +1,5 @@
 test
-https://floqast.com
+https://floqast.app
 testetst
 https://automation.floqast.app
 test
