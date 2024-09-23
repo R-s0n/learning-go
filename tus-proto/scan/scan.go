@@ -1,6 +1,8 @@
 package scan
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"learning-go/tus-proto/structs"
@@ -35,5 +37,23 @@ func Test(u string, wg *sync.WaitGroup) {
 		fmt.Println("[!] Could not read response body!")
 	}
 	c.Body = string(b)
-	fmt.Println(c)
+	// fmt.Println(c)
+	jsonData, err := json.Marshal(c)
+	if err != nil {
+		fmt.Println("Error Marshalling JSON: ", err)
+		return
+	}
+	url := "http://localhost:8080/testjson"
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Error Creating Request:", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	jsonResp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error Sending Request:", err)
+	}
+	defer jsonResp.Body.Close()
+	fmt.Println("Response Status:", jsonResp.Status)
 }
