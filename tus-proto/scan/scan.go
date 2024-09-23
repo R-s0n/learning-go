@@ -43,7 +43,7 @@ func Test(u string, wg *sync.WaitGroup) {
 		fmt.Println("Error Marshalling JSON: ", err)
 		return
 	}
-	url := "http://localhost:8080/testjson"
+	url := "http://localhost:8080/api/targeturl/new"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Println("Error Creating Request:", err)
