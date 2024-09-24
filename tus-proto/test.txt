@@ -4,3 +4,4 @@ testetst
 https://automation.floqast.app
 test
 https://floqast.engineering
+http://floqast.com:8080

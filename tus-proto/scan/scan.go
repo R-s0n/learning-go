@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io"
 	"learning-go/tus-proto/structs"
+	"net"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 )
 
@@ -14,15 +17,33 @@ func Test(u string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	var c structs.TargetUrl
 	fmt.Println("[-] Scanning " + u)
-	// host := strings.Split(u, "//")
-	// result, err := net.LookupHost(host[1])
-	// if err != nil {
-	// 	fmt.Println(result)
-	// }
+	parsedUrl, err := url.Parse(u)
+	if err != nil {
+		fmt.Println("[!] Error Parsing URL " + u + "!")
+		return
+	}
+	c.UrlProto = parsedUrl.Scheme
+	host := parsedUrl.Host
+	var domain, port string
+	if strings.Contains(host, ":") {
+		domain, port, err = net.SplitHostPort(host)
+		if err != nil {
+			fmt.Println("[!] Error Splitting Host and Port:", err)
+			return
+		}
+	} else {
+		domain = host
+		if c.UrlProto == "http" {
+			port = "80"
+		} else if c.UrlProto == "https" {
+			port = "443"
+		}
+	}
+	c.Domain = domain
+	c.Port = port
 	resp, err := http.Get(u)
 	if err != nil {
 		fmt.Println("[!] " + u + " did not respond to a GET request!")
-		// fmt.Println(err)
 		return
 	}
 	defer resp.Body.Close()
@@ -37,7 +58,7 @@ func Test(u string, wg *sync.WaitGroup) {
 		fmt.Println("[!] Could not read response body!")
 	}
 	c.Body = string(b)
-	// fmt.Println(c)
+	c.Url = u
 	jsonData, err := json.Marshal(c)
 	if err != nil {
 		fmt.Println("Error Marshalling JSON: ", err)
@@ -52,8 +73,8 @@ func Test(u string, wg *sync.WaitGroup) {
 	client := &http.Client{}
 	jsonResp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error Sending Request:", err)
+		fmt.Println("[!] Error Storing "+u+" in Database:", err)
 	}
 	defer jsonResp.Body.Close()
-	fmt.Println("Response Status:", jsonResp.Status)
+	fmt.Println("[+] Successfully Stored "+u+" in Database:", jsonResp.Status)
 }
