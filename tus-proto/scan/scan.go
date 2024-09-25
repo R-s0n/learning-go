@@ -76,5 +76,9 @@ func Test(u string, wg *sync.WaitGroup) {
 		fmt.Println("[!] Error Storing "+u+" in Database:", err)
 	}
 	defer jsonResp.Body.Close()
-	fmt.Println("[+] Successfully Stored "+u+" in Database:", jsonResp.Status)
+	if jsonResp.StatusCode == 200 {
+		fmt.Println("[+] Successfully Stored "+u+" in Database:", jsonResp.StatusCode)
+	} else {
+		fmt.Println("[!] Something Went Wrong Storing "+u+":", jsonResp.Status)
+	}
 }
